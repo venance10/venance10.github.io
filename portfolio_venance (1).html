@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Venance Houndété — Cybersecurity & GRC</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#060A0F;--bg2:#0D1520;--bg3:#111B28;
+  --green:#00FFB2;--blue:#00A8FF;--orange:#FF6B35;
+  --text:#C9D8E8;--muted:#5A7A9A;--border:#1A2D42;
+  --font-mono:'Share Tech Mono',monospace;
+  --font-disp:'Syne',sans-serif;
+  --font-body:'DM Sans',sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-weight:300;overflow-x:hidden;cursor:none}
+#cursor{width:10px;height:10px;background:var(--green);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .2s,height .2s;mix-blend-mode:screen}
+#cursor-ring{width:36px;height:36px;border:1px solid rgba(0,255,178,.35);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:width .25s,height .25s}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;z-index:1000;opacity:.4}
+.grid-bg{position:fixed;inset:0;z-index:0;background-image:linear-gradient(rgba(0,255,178,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,178,.02) 1px,transparent 1px);background-size:40px 40px;pointer-events:none}
+.lang-toggle{display:flex;border:1px solid var(--border);border-radius:4px;overflow:hidden;margin-left:24px}
+.lang-btn{font-family:var(--font-mono);font-size:11px;letter-spacing:1px;padding:7px 14px;background:transparent;color:var(--muted);border:none;cursor:pointer;transition:background .2s,color .2s;text-transform:uppercase}
+.lang-btn.active{background:var(--green);color:var(--bg);font-weight:700}
+.lang-btn:not(.active):hover{background:rgba(0,255,178,.08);color:var(--green)}
+nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;align-items:center;justify-content:space-between;padding:16px 48px;background:rgba(6,10,15,.9);backdrop-filter:blur(16px);border-bottom:1px solid var(--border)}
+.nav-logo{font-family:var(--font-mono);color:var(--green);font-size:14px;letter-spacing:2px}
+.nav-links{display:flex;gap:28px;align-items:center}
+.nav-links a{font-family:var(--font-mono);font-size:11px;letter-spacing:1.5px;color:var(--muted);text-decoration:none;text-transform:uppercase;transition:color .25s;position:relative}
+.nav-links a::after{content:'';position:absolute;bottom:-3px;left:0;width:0;height:1px;background:var(--green);transition:width .3s}
+.nav-links a:hover{color:var(--green)}
+.nav-links a:hover::after{width:100%}
+#hero{min-height:100vh;display:flex;align-items:center;padding:120px 48px 80px;position:relative;z-index:1}
+.hero-inner{max-width:900px}
+.hero-tag{font-family:var(--font-mono);font-size:12px;letter-spacing:3px;color:var(--green);text-transform:uppercase;margin-bottom:24px;display:flex;align-items:center;gap:12px}
+.hero-tag::before{content:'';width:40px;height:1px;background:var(--green)}
+.hero-name{font-family:var(--font-disp);font-size:clamp(48px,8vw,96px);font-weight:800;line-height:.95;letter-spacing:-2px;color:#fff;margin-bottom:12px}
+.hero-name span{color:var(--green)}
+.hero-role{font-family:var(--font-mono);font-size:clamp(14px,2vw,18px);color:var(--blue);margin-bottom:32px;letter-spacing:1px;min-height:28px}
+.hero-desc{font-size:16px;line-height:1.8;color:var(--text);max-width:580px;margin-bottom:48px}
+.hero-ctas{display:flex;gap:16px;flex-wrap:wrap}
+.btn-primary{font-family:var(--font-mono);font-size:13px;letter-spacing:1px;padding:14px 32px;background:var(--green);color:var(--bg);border:none;text-decoration:none;text-transform:uppercase;font-weight:700;clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,0 100%);transition:transform .2s,box-shadow .2s;display:inline-block}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,255,178,.35)}
+.btn-secondary{font-family:var(--font-mono);font-size:13px;letter-spacing:1px;padding:14px 32px;background:transparent;color:var(--green);border:1px solid rgba(0,255,178,.4);text-decoration:none;text-transform:uppercase;clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,0 100%);transition:background .2s,border-color .2s,transform .2s;display:inline-block}
+.btn-secondary:hover{background:rgba(0,255,178,.08);border-color:var(--green);transform:translateY(-2px)}
+.hero-orb{position:absolute;right:5%;top:50%;transform:translateY(-50%);width:420px;height:420px;background:radial-gradient(circle,rgba(0,168,255,.15) 0%,transparent 70%);border-radius:50%;pointer-events:none;animation:pulse-orb 4s ease-in-out infinite}
+@keyframes pulse-orb{0%,100%{transform:translateY(-50%) scale(1);opacity:.8}50%{transform:translateY(-50%) scale(1.08);opacity:1}}
+.hero-stats{display:flex;gap:48px;margin-top:64px;border-top:1px solid var(--border);padding-top:32px;flex-wrap:wrap}
+.stat-num{font-family:var(--font-disp);font-size:36px;font-weight:800;color:var(--green);line-height:1}
+.stat-label{font-family:var(--font-mono);font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-top:6px}
+section{padding:100px 48px;position:relative;z-index:1}
+.section-label{font-family:var(--font-mono);font-size:11px;color:var(--green);letter-spacing:3px;text-transform:uppercase;margin-bottom:12px}
+.section-title{font-family:var(--font-disp);font-size:clamp(28px,4vw,48px);font-weight:800;color:#fff;line-height:1.1;letter-spacing:-1px;margin-bottom:56px}
+#about{background:var(--bg2)}
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:start}
+.about-text{font-size:16px;line-height:1.9;color:var(--text)}
+.about-text p{margin-bottom:20px}
+.about-cards{display:flex;flex-direction:column;gap:16px}
+.about-card{background:var(--bg3);border:1px solid var(--border);border-left:3px solid var(--green);padding:20px 24px;font-family:var(--font-mono);font-size:13px;color:var(--text);transition:border-left-color .25s,transform .25s}
+.about-card:hover{border-left-color:var(--blue);transform:translateX(4px)}
+.ac-title{color:var(--green);font-size:11px;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px}
+#services{background:var(--bg)}
+.services-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:24px}
+.service-card{background:var(--bg2);border:1px solid var(--border);padding:32px;transition:transform .3s,border-color .3s,box-shadow .3s}
+.service-card:hover{transform:translateY(-4px);border-color:rgba(0,255,178,.3);box-shadow:0 16px 48px rgba(0,0,0,.4)}
+.service-icon{font-size:28px;margin-bottom:16px}
+.service-line{width:32px;height:2px;background:var(--green);margin-bottom:16px}
+.service-title{font-family:var(--font-disp);font-size:18px;font-weight:700;color:#fff;margin-bottom:10px}
+.service-desc{font-size:13px;line-height:1.8;color:var(--muted)}
+#projects{background:var(--bg2)}
+.projects-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:24px}
+.project-card{background:var(--bg3);border:1px solid var(--border);padding:32px;position:relative;overflow:hidden;transition:transform .3s,border-color .3s,box-shadow .3s}
+.project-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--green),var(--blue));transform:scaleX(0);transform-origin:left;transition:transform .4s}
+.project-card:hover{transform:translateY(-4px);border-color:rgba(0,255,178,.3);box-shadow:0 16px 48px rgba(0,0,0,.4)}
+.project-card:hover::before{transform:scaleX(1)}
+.proj-number{font-family:var(--font-mono);font-size:11px;color:var(--muted);letter-spacing:2px;margin-bottom:16px}
+.proj-title{font-family:var(--font-disp);font-size:20px;font-weight:700;color:#fff;line-height:1.3;margin-bottom:8px}
+.proj-org{font-family:var(--font-mono);font-size:11px;color:var(--blue);letter-spacing:1px;margin-bottom:20px}
+.proj-bullets{list-style:none;margin-bottom:24px}
+.proj-bullets li{font-size:13px;color:var(--text);padding:5px 0 5px 16px;position:relative;line-height:1.6}
+.proj-bullets li::before{content:'▸';position:absolute;left:0;color:var(--green);font-size:10px;top:7px}
+.proj-tags{display:flex;flex-wrap:wrap;gap:8px}
+.proj-tag{font-family:var(--font-mono);font-size:10px;padding:4px 10px;letter-spacing:1px;border:1px solid rgba(0,255,178,.25);color:var(--green);text-transform:uppercase}
+.proj-tag.blue{border-color:rgba(0,168,255,.25);color:var(--blue)}
+.proj-tag.orange{border-color:rgba(255,107,53,.25);color:var(--orange)}
+.featured-badge{position:absolute;top:16px;right:16px;font-family:var(--font-mono);font-size:9px;background:var(--green);color:var(--bg);padding:4px 10px;letter-spacing:2px;text-transform:uppercase;font-weight:700}
+#skills{background:var(--bg)}
+.skills-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:32px}
+.skill-group-title{font-family:var(--font-mono);font-size:11px;color:var(--green);letter-spacing:2px;text-transform:uppercase;margin-bottom:20px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+.skill-item{margin-bottom:14px}
+.skill-header{display:flex;justify-content:space-between;margin-bottom:6px}
+.skill-name{font-size:13px;color:var(--text)}
+.skill-pct{font-family:var(--font-mono);font-size:11px;color:var(--muted)}
+.skill-bar-track{height:3px;background:var(--border);overflow:hidden}
+.skill-bar-fill{height:100%;background:linear-gradient(90deg,var(--green),var(--blue));width:0;transition:width 1.2s cubic-bezier(.4,0,.2,1);position:relative}
+.skill-bar-fill::after{content:'';position:absolute;right:0;top:50%;width:6px;height:6px;background:var(--green);border-radius:50%;transform:translateY(-50%);box-shadow:0 0 8px var(--green)}
+.tools-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:12px;margin-top:40px}
+.tool-chip{background:var(--bg2);border:1px solid var(--border);padding:12px 16px;text-align:center;font-family:var(--font-mono);font-size:11px;color:var(--muted);letter-spacing:1px;transition:border-color .25s,color .25s,background .25s}
+.tool-chip:hover{border-color:var(--green);color:var(--green);background:rgba(0,255,178,.04)}
+#education{background:var(--bg2)}
+.edu-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px}
+.edu-col-title{font-family:var(--font-mono);font-size:11px;color:var(--green);letter-spacing:2px;text-transform:uppercase;margin-bottom:24px}
+.timeline{position:relative;padding-left:28px}
+.timeline::before{content:'';position:absolute;left:0;top:8px;bottom:8px;width:1px;background:linear-gradient(var(--green),var(--border))}
+.timeline-item{position:relative;margin-bottom:36px}
+.timeline-item::before{content:'';position:absolute;left:-32px;top:6px;width:8px;height:8px;background:var(--green);border-radius:50%;box-shadow:0 0 10px var(--green)}
+.tl-date{font-family:var(--font-mono);font-size:11px;color:var(--blue);letter-spacing:1px;margin-bottom:6px}
+.tl-title{font-family:var(--font-disp);font-size:16px;font-weight:700;color:#fff;margin-bottom:4px}
+.tl-sub{font-size:13px;color:var(--muted);line-height:1.6}
+#contact{background:var(--bg3);text-align:center}
+.contact-tagline{font-size:18px;color:var(--text);max-width:560px;margin:0 auto 48px;line-height:1.8}
+.contact-links{display:flex;justify-content:center;flex-wrap:wrap;gap:20px}
+.contact-link{display:flex;align-items:center;gap:10px;font-family:var(--font-mono);font-size:13px;color:var(--text);text-decoration:none;padding:14px 24px;border:1px solid var(--border);transition:border-color .25s,color .25s,background .25s}
+.contact-link:hover{border-color:var(--green);color:var(--green);background:rgba(0,255,178,.04)}
+.contact-link svg{width:16px;height:16px;flex-shrink:0}
+footer{background:var(--bg);border-top:1px solid var(--border);padding:24px 48px;display:flex;justify-content:space-between;align-items:center;font-family:var(--font-mono);font-size:11px;color:var(--muted)}
+.fade-up{opacity:0;transform:translateY(28px);transition:opacity .7s ease,transform .7s ease}
+.fade-up.visible{opacity:1;transform:translateY(0)}
+.typing-line{font-family:var(--font-mono);font-size:13px;color:var(--green);white-space:nowrap;overflow:hidden;border-right:2px solid var(--green);animation:blink-caret .8s step-end infinite;display:inline-block}
+@keyframes blink-caret{50%{border-color:transparent}}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+::-webkit-scrollbar-thumb:hover{background:var(--green)}
+@media(max-width:768px){
+  nav{padding:14px 20px}
+  .nav-links{gap:0}.nav-links a{display:none}.lang-toggle{margin-left:0}
+  #hero{padding:100px 20px 60px}
+  section{padding:70px 20px}
+  .about-grid,.edu-grid{grid-template-columns:1fr;gap:36px}
+  .hero-orb{display:none}
+  .hero-stats{gap:28px}
+  footer{flex-direction:column;gap:8px;text-align:center;padding:20px}
+}
+</style>
+</head>
+<body>
+<div class="grid-bg"></div>
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<nav>
+  <div class="nav-logo">VH_SECURITY</div>
+  <div class="nav-links">
+    <a href="#about"     data-fr="Profil"      data-en="About">Profil</a>
+    <a href="#services"  data-fr="Services"    data-en="Services">Services</a>
+    <a href="#projects"  data-fr="Projets"     data-en="Projects">Projets</a>
+    <a href="#skills"    data-fr="Compétences" data-en="Skills">Compétences</a>
+    <a href="#education" data-fr="Parcours"    data-en="Background">Parcours</a>
+    <a href="#contact"   data-fr="Contact"     data-en="Contact">Contact</a>
+    <div class="lang-toggle">
+      <button class="lang-btn active" onclick="setLang('fr')">🇫🇷 FR</button>
+      <button class="lang-btn"        onclick="setLang('en')">🇬🇧 EN</button>
+    </div>
+  </div>
+</nav>
+
+<section id="hero">
+  <div class="hero-orb"></div>
+  <div class="hero-inner">
+    <div class="hero-tag" data-fr="Cybersécurité · GRC · Conformité SI" data-en="Cybersecurity · GRC · IS Compliance">Cybersécurité · GRC · Conformité SI</div>
+    <h1 class="hero-name">Venance<br><span>Houndété</span></h1>
+    <div class="hero-role"><span class="typing-line" id="typing-target"></span></div>
+    <p class="hero-desc" data-fr="Spécialiste en gouvernance des systèmes d'information, conformité réglementaire et sécurité défensive. J'accompagne les organisations dans leur mise en conformité, la gestion de leurs risques et la protection de leur patrimoine informationnel." data-en="Information systems governance, regulatory compliance and defensive security specialist. I help organizations achieve compliance, manage risks and protect their information assets.">Spécialiste en gouvernance des systèmes d'information, conformité réglementaire et sécurité défensive. J'accompagne les organisations dans leur mise en conformité, la gestion de leurs risques et la protection de leur patrimoine informationnel.</p>
+    <div class="hero-ctas">
+      <a href="#projects" class="btn-primary"   data-fr="Voir mes projets" data-en="View my work">Voir mes projets</a>
+      <a href="#contact"  class="btn-secondary" data-fr="Me contacter"     data-en="Contact me">Me contacter</a>
+    </div>
+    <div class="hero-stats">
+      <div><div class="stat-num">4+</div><div class="stat-label" data-fr="Projets réalisés"           data-en="Projects completed">Projets réalisés</div></div>
+      <div><div class="stat-num">31</div><div class="stat-label" data-fr="Points de contrôle audités" data-en="Control points audited">Points de contrôle audités</div></div>
+      <div><div class="stat-num">50+</div><div class="stat-label" data-fr="Règles PSSI rédigées"      data-en="Security policy rules">Règles PSSI rédigées</div></div>
+      <div><div class="stat-num">3</div><div class="stat-label"  data-fr="Référentiels maîtrisés"     data-en="Frameworks mastered">Référentiels maîtrisés</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="about">
+  <div class="section-label" data-fr="// 01. profil" data-en="// 01. about">// 01. profil</div>
+  <h2 class="section-title" data-fr="Qui suis-je ?" data-en="Who am I?">Qui suis-je ?</h2>
+  <div class="about-grid">
+    <div class="about-text fade-up">
+      <p data-fr="Spécialiste en <strong style='color:#fff'>sécurité des systèmes d'information</strong> avec une expertise en gouvernance, gestion des risques et conformité réglementaire (GRC). Maîtrise des référentiels ISO 27001, PSSIE Bénin et NIST." data-en="<strong style='color:#fff'>Information systems security</strong> specialist with expertise in governance, risk management and regulatory compliance (GRC). Proficient in ISO 27001, PSSIE Benin and NIST frameworks.">Spécialiste en <strong style="color:#fff">sécurité des systèmes d'information</strong> avec une expertise en gouvernance, gestion des risques et conformité réglementaire (GRC). Maîtrise des référentiels ISO 27001, PSSIE Bénin et NIST.</p>
+      <p data-fr="J'ai conduit des missions institutionnelles concrètes, notamment la <strong style='color:var(--green)'>première PSSI officielle de l'Université d'Abomey-Calavi</strong>, et participé à des hackathons cybersécurité en conditions réelles avec outils SIEM et OSINT." data-en="I have led concrete institutional missions, including the <strong style='color:var(--green)'>first official ISSP of the University of Abomey-Calavi</strong>, and participated in cybersecurity hackathons using SIEM and OSINT tools in real-world conditions.">J'ai conduit des missions institutionnelles concrètes, notamment la <strong style="color:var(--green)">première PSSI officielle de l'Université d'Abomey-Calavi</strong>, et participé à des hackathons cybersécurité en conditions réelles avec outils SIEM et OSINT.</p>
+      <p data-fr="Mon objectif : aider les entreprises et organisations à cartographier leurs risques, renforcer leur posture sécurité et atteindre leurs objectifs de conformité." data-en="My goal: help companies and organizations map their risks, strengthen their security posture and achieve their compliance objectives.">Mon objectif : aider les entreprises et organisations à cartographier leurs risques, renforcer leur posture sécurité et atteindre leurs objectifs de conformité.</p>
+    </div>
+    <div class="about-cards fade-up">
+      <div class="about-card"><div class="ac-title" data-fr="Localisation" data-en="Location">Localisation</div><span data-fr="Abomey-Calavi, Bénin · Disponible en remote" data-en="Abomey-Calavi, Benin · Available remotely">Abomey-Calavi, Bénin · Disponible en remote</span></div>
+      <div class="about-card"><div class="ac-title" data-fr="Spécialité" data-en="Specialty">Spécialité</div><span data-fr="GRC · ISO 27001 · PSSI · Audit SI · Sécurité défensive" data-en="GRC · ISO 27001 · ISSP · IS Audit · Defensive Security">GRC · ISO 27001 · PSSI · Audit SI · Sécurité défensive</span></div>
+      <div class="about-card"><div class="ac-title" data-fr="Langues" data-en="Languages">Langues</div><span data-fr="Français — Courant · Anglais — Intermédiaire" data-en="French — Fluent · English — Intermediate">Français — Courant · Anglais — Intermédiaire</span></div>
+      <div class="about-card"><div class="ac-title" data-fr="Disponibilité" data-en="Availability">Disponibilité</div><span data-fr="Freelance · Missions courtes et longues · Remote" data-en="Freelance · Short & long-term contracts · Remote">Freelance · Missions courtes et longues · Remote</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="services">
+  <div class="section-label" data-fr="// 02. services" data-en="// 02. services">// 02. services</div>
+  <h2 class="section-title" data-fr="Ce que je propose" data-en="What I offer">Ce que je propose</h2>
+  <div class="services-grid">
+    <div class="service-card fade-up"><div class="service-icon">🔍</div><div class="service-line"></div><div class="service-title" data-fr="Audit de Sécurité SI" data-en="IS Security Audit">Audit de Sécurité SI</div><div class="service-desc" data-fr="Analyse des vulnérabilités, évaluation de la posture sécurité et rapport de recommandations priorisées." data-en="Vulnerability analysis, security posture assessment and prioritized recommendations report.">Analyse des vulnérabilités, évaluation de la posture sécurité et rapport de recommandations priorisées.</div></div>
+    <div class="service-card fade-up"><div class="service-icon">📋</div><div class="service-line"></div><div class="service-title" data-fr="Rédaction PSSI" data-en="Security Policy (ISSP)">Rédaction PSSI</div><div class="service-desc" data-fr="Élaboration de votre Politique de Sécurité SI adaptée à votre contexte, vos risques et vos obligations réglementaires." data-en="Development of your IS Security Policy tailored to your context, risks and regulatory obligations.">Élaboration de votre Politique de Sécurité SI adaptée à votre contexte, vos risques et vos obligations réglementaires.</div></div>
+    <div class="service-card fade-up"><div class="service-icon">📊</div><div class="service-line"></div><div class="service-title" data-fr="Gap Analysis ISO 27001" data-en="ISO 27001 Gap Analysis">Gap Analysis ISO 27001</div><div class="service-desc" data-fr="Évaluation des écarts entre votre situation actuelle et les exigences ISO 27001 avec feuille de route de conformité." data-en="Assessment of gaps between your current state and ISO 27001 requirements with a compliance roadmap.">Évaluation des écarts entre votre situation actuelle et les exigences ISO 27001 avec feuille de route de conformité.</div></div>
+    <div class="service-card fade-up"><div class="service-icon">🗺️</div><div class="service-line"></div><div class="service-title" data-fr="Cartographie SI" data-en="IS Mapping">Cartographie SI</div><div class="service-desc" data-fr="Cartographie complète de votre infrastructure, identification des actifs critiques et analyse des flux sensibles." data-en="Complete mapping of your infrastructure, identification of critical assets and sensitive data flow analysis.">Cartographie complète de votre infrastructure, identification des actifs critiques et analyse des flux sensibles.</div></div>
+    <div class="service-card fade-up"><div class="service-icon">⚙️</div><div class="service-line"></div><div class="service-title" data-fr="Développement Sécurisé" data-en="Secure Development">Développement Sécurisé</div><div class="service-desc" data-fr="Intégration des bonnes pratiques : chiffrement, authentification forte, protection contre les attaques courantes." data-en="Integration of best practices: encryption, strong authentication, protection against common attacks.">Intégration des bonnes pratiques : chiffrement, authentification forte, protection contre les attaques courantes.</div></div>
+    <div class="service-card fade-up"><div class="service-icon">🎓</div><div class="service-line"></div><div class="service-title" data-fr="Sensibilisation Sécurité" data-en="Security Awareness">Sensibilisation Sécurité</div><div class="service-desc" data-fr="Formations pour sensibiliser vos équipes aux bonnes pratiques, aux menaces actuelles et aux réflexes essentiels." data-en="Training to raise your teams' awareness of best practices, current threats and essential security reflexes.">Formations pour sensibiliser vos équipes aux bonnes pratiques, aux menaces actuelles et aux réflexes essentiels.</div></div>
+  </div>
+</section>
+
+<section id="projects">
+  <div class="section-label" data-fr="// 03. projets" data-en="// 03. projects">// 03. projets</div>
+  <h2 class="section-title" data-fr="Travaux réalisés" data-en="Selected work">Travaux réalisés</h2>
+  <div class="projects-grid">
+
+    <div class="project-card fade-up">
+      <div class="featured-badge" data-fr="Institutionnel" data-en="Institutional">Institutionnel</div>
+      <div class="proj-number">01 · 2025</div>
+      <div class="proj-title" data-fr="Gap Analysis du SI de l'UAC" data-en="UAC IS Gap Analysis">Gap Analysis du SI de l'UAC</div>
+      <div class="proj-org">SPTIC – Université d'Abomey-Calavi</div>
+      <ul class="proj-bullets">
+        <li data-fr="Analyse des écarts sur 31 points de contrôle" data-en="Gap analysis across 31 control points">Analyse des écarts sur 31 points de contrôle</li>
+        <li data-fr="Référentiels croisés : PSSIE Bénin, ISO 27001:2022, Code du Numérique" data-en="Cross-referenced frameworks: PSSIE Benin, ISO 27001:2022, Digital Code">Référentiels croisés : PSSIE Bénin, ISO 27001:2022, Code du Numérique</li>
+        <li data-fr="27 questions structurées couvrant 7 domaines de sécurité" data-en="27 structured questions covering 7 security domains">27 questions structurées couvrant 7 domaines de sécurité</li>
+        <li data-fr="Identification des vulnérabilités et recommandations priorisées" data-en="Vulnerability identification and prioritized recommendations">Identification des vulnérabilités et recommandations priorisées</li>
+      </ul>
+      <div class="proj-tags"><span class="proj-tag">ISO 27001</span><span class="proj-tag">PSSIE</span><span class="proj-tag">Gap Analysis</span><span class="proj-tag">Audit</span></div>
+    </div>
+
+    <div class="project-card fade-up">
+      <div class="featured-badge" data-fr="1ère au Bénin" data-en="1st in Benin">1ère au Bénin</div>
+      <div class="proj-number">02 · 2025</div>
+      <div class="proj-title" data-fr="PSSI Officielle de l'UAC" data-en="UAC Official Security Policy">PSSI Officielle de l'UAC</div>
+      <div class="proj-org">SPTIC – Université d'Abomey-Calavi</div>
+      <ul class="proj-bullets">
+        <li data-fr="Premier document institutionnel de gouvernance sécurité de l'UAC" data-en="First institutional security governance document at UAC">Premier document institutionnel de gouvernance sécurité de l'UAC</li>
+        <li data-fr="13 sections, 50+ règles de sécurité formalisées" data-en="13 sections, 50+ formalized security rules">13 sections, 50+ règles de sécurité formalisées</li>
+        <li data-fr="Feuille de route ISO 27001 sur 18–24 mois (4 phases)" data-en="ISO 27001 roadmap over 18–24 months (4 phases)">Feuille de route ISO 27001 sur 18–24 mois (4 phases)</li>
+        <li data-fr="Aligné sur PSSIE Bénin, ISO 27001 et Code du Numérique" data-en="Aligned with PSSIE Benin, ISO 27001 and Digital Code">Aligné sur PSSIE Bénin, ISO 27001 et Code du Numérique</li>
+      </ul>
+      <div class="proj-tags"><span class="proj-tag">PSSI</span><span class="proj-tag">Gouvernance</span><span class="proj-tag">ISO 27001</span><span class="proj-tag">Conformité</span></div>
+    </div>
+
+    <div class="project-card fade-up">
+      <div class="proj-number">03 · Fév. 2026</div>
+      <div class="proj-title" data-fr="Plateforme IA Sécurisée" data-en="Secure AI Platform">Plateforme IA Sécurisée</div>
+      <div class="proj-org">Hackathon AI4BMI – IFRI/UAC</div>
+      <ul class="proj-bullets">
+        <li data-fr="Chiffrement AES-256-GCM des données sensibles" data-en="AES-256-GCM encryption of sensitive data">Chiffrement AES-256-GCM des données sensibles</li>
+        <li data-fr="Authentification MFA par email avec expiration automatique" data-en="MFA email authentication with auto-expiry">Authentification MFA par email avec expiration automatique</li>
+        <li data-fr="API Flask sécurisée : tokens JWT + cookies HttpOnly" data-en="Secure Flask API: JWT tokens + HttpOnly cookies">API Flask sécurisée : tokens JWT + cookies HttpOnly</li>
+        <li data-fr="Protection anti-brute force (NIST SP 800-63B)" data-en="Anti-brute force protection (NIST SP 800-63B)">Protection anti-brute force (NIST SP 800-63B)</li>
+      </ul>
+      <div class="proj-tags"><span class="proj-tag blue">Python</span><span class="proj-tag blue">Flask</span><span class="proj-tag blue">AES-256</span><span class="proj-tag blue">JWT/MFA</span></div>
+    </div>
+
+    <div class="project-card fade-up">
+      <div class="proj-number">04 · 2023–2024</div>
+      <div class="proj-title" data-fr="Hackathon NetBlue" data-en="NetBlue Hackathon">Hackathon NetBlue</div>
+      <div class="proj-org" data-fr="Lutte contre Money Industry – IFRI/UAC" data-en="Fight against Money Industry – IFRI/UAC">Lutte contre Money Industry – IFRI/UAC</div>
+      <ul class="proj-bullets">
+        <li data-fr="Collecte de preuves numériques et analyse OSINT" data-en="Digital evidence collection and OSINT analysis">Collecte de preuves numériques et analyse OSINT</li>
+        <li data-fr="Surveillance de cyberattaques industrielles et escroqueries" data-en="Industrial cyberattack and scam monitoring">Surveillance de cyberattaques industrielles et escroqueries</li>
+        <li data-fr="SIEM : ArcSight et QRadar · TLS 2.0 · PRA" data-en="SIEM: ArcSight and QRadar · TLS 2.0 · DRP">SIEM : ArcSight et QRadar · TLS 2.0 · PRA</li>
+      </ul>
+      <div class="proj-tags"><span class="proj-tag orange">OSINT</span><span class="proj-tag orange">SIEM</span><span class="proj-tag orange">ArcSight</span><span class="proj-tag orange">Forensics</span></div>
+    </div>
+
+    <!-- ✏️ NOUVEAU PROJET — copier ce bloc et remplir -->
+    <!--
+    <div class="project-card fade-up">
+      <div class="proj-number">05 · 2026</div>
+      <div class="proj-title" data-fr="Titre du projet" data-en="Project title">Titre du projet</div>
+      <div class="proj-org">Organisation · Contexte</div>
+      <ul class="proj-bullets">
+        <li data-fr="Description FR" data-en="Description EN">Description FR</li>
+      </ul>
+      <div class="proj-tags"><span class="proj-tag">Tag</span></div>
+    </div>
+    -->
+
+  </div>
+</section>
+
+<section id="skills">
+  <div class="section-label" data-fr="// 04. compétences" data-en="// 04. skills">// 04. compétences</div>
+  <h2 class="section-title" data-fr="Arsenal technique" data-en="Technical arsenal">Arsenal technique</h2>
+  <div class="skills-grid">
+    <div class="skill-group fade-up">
+      <div class="skill-group-title" data-fr="Gouvernance & Conformité" data-en="Governance & Compliance">Gouvernance & Conformité</div>
+      <div class="skill-item"><div class="skill-header"><span class="skill-name">ISO 27001:2022</span><span class="skill-pct">85%</span></div><div class="skill-bar-track"><div class="skill-bar-fill" data-width="85"></div></div></div>
+      <div class="skill-item"><div class="skill-header"><span class="skill-name">PSSIE Bénin</span><span class="skill-pct">88%</span></div><div class="skill-bar-track"><div class="skill-bar-fill" data-width="88"></div></div></div>
+      <div class="skill-item"><div class="skill-header"><span class="skill-name" data-fr="Rédaction PSSI" data-en="ISSP Writing">Rédaction PSSI</span><span class="skill-pct">85%</span></div><div class="skill-bar-track"><div class="skill-bar-fill" data-width="85"></div></div></div>
+      <div class="skill-item"><div class="skill-header"><span class="skill-name">Gap Analysis</span><span class="skill-pct">82%</span></div><div class="skill-bar-track"><div class="skill-bar-fill" data-width="82"></div></div></div>
+      <div class="skill-item"><div class="skill-header"><span class="skill-name">NIST / OWASP</span><span class="skill-pct">75%</span></div><div class="skill-bar-track"><div class="skill-bar-fill" data-width="75"></div></div></div>
+    </div>
+    <div class="skill-group fade-up">
+      <div class="skill-group-title" data-fr="Cybersécurité Défensive" data-en="Defensive Security">Cybersécurité Défensive</div>
+      <div class="skill-item"><div class="skill-header"><span class="skill-name">Wireshark / Nmap</span><span class="skill-pct">80%</span></div><div class="skill-bar-track"><div class="skill-bar-fill" data-width="80"></div></div></div>
+      <div class="skill-item"><div class="skill-header"><span class="skill-name">Burp Suite</span><span class="skill-pct">70%</span></div><div class="skill-bar-track"><div class="skill-bar-fill" data-width="70"></div></div></div>
+      <div class="skill-item"><div class="skill-header"><span class="skill-name">Kali Linux</span><span class="skill-pct">78%</span></div><div class="skill-bar-track"><div class="skill-bar-fill" data-width="78"></div></div></div>
+      <div class="skill-item"><div class="skill-header"><span class="skill-name">IDS/IPS · Firewall</span><span class="skill-pct">72%</span></div><div class="skill-bar-track"><div class="skill-bar-fill" data-width="72"></div></div></div>
+      <div class="skill-item"><div class="skill-header"><span class="skill-name">Aircrack-ng</span><span class="skill-pct">65%</span></div><div class="skill-bar-track"><div class="skill-bar-fill" data-width="65"></div></div></div>
+    </div>
+    <div class="skill-group fade-up">
+      <div class="skill-group-title" data-fr="Développement Sécurisé" data-en="Secure Development">Développement Sécurisé</div>
+      <div class="skill-item"><div class="skill-header"><span class="skill-name">Python / Flask</span><span class="skill-pct">75%</span></div><div class="skill-bar-track"><div class="skill-bar-fill" data-width="75"></div></div></div>
+      <div class="skill-item"><div class="skill-header"><span class="skill-name">AES-256 / bcrypt / JWT</span><span class="skill-pct">78%</span></div><div class="skill-bar-track"><div class="skill-bar-fill" data-width="78"></div></div></div>
+      <div class="skill-item"><div class="skill-header"><span class="skill-name">HTML/CSS/JS</span><span class="skill-pct">65%</span></div><div class="skill-bar-track"><div class="skill-bar-fill" data-width="65"></div></div></div>
+      <div class="skill-item"><div class="skill-header"><span class="skill-name">Git / GitHub</span><span class="skill-pct">72%</span></div><div class="skill-bar-track"><div class="skill-bar-fill" data-width="72"></div></div></div>
+      <div class="skill-item"><div class="skill-header"><span class="skill-name">Bash</span><span class="skill-pct">60%</span></div><div class="skill-bar-track"><div class="skill-bar-fill" data-width="60"></div></div></div>
+    </div>
+    <div class="skill-group fade-up">
+      <div class="skill-group-title" data-fr="SIEM & Analyse" data-en="SIEM & Analysis">SIEM & Analyse</div>
+      <div class="skill-item"><div class="skill-header"><span class="skill-name">ArcSight / QRadar</span><span class="skill-pct">60%</span></div><div class="skill-bar-track"><div class="skill-bar-fill" data-width="60"></div></div></div>
+      <div class="skill-item"><div class="skill-header"><span class="skill-name">OSINT</span><span class="skill-pct">70%</span></div><div class="skill-bar-track"><div class="skill-bar-fill" data-width="70"></div></div></div>
+      <div class="skill-item"><div class="skill-header"><span class="skill-name">Netdata</span><span class="skill-pct">65%</span></div><div class="skill-bar-track"><div class="skill-bar-fill" data-width="65"></div></div></div>
+    </div>
+  </div>
+  <div class="tools-grid fade-up">
+    <div class="tool-chip">Wireshark</div><div class="tool-chip">Nmap</div>
+    <div class="tool-chip">Burp Suite</div><div class="tool-chip">Kali Linux</div>
+    <div class="tool-chip">Aircrack-ng</div><div class="tool-chip">ArcSight</div>
+    <div class="tool-chip">QRadar</div><div class="tool-chip">Netdata</div>
+    <div class="tool-chip">Python</div><div class="tool-chip">Flask</div>
+    <div class="tool-chip">Git / GitHub</div><div class="tool-chip">AES-256-GCM</div>
+    <div class="tool-chip">JWT / bcrypt</div><div class="tool-chip">OSINT</div>
+    <!-- ✏️ AJOUTER : <div class="tool-chip">NouvelOutil</div> -->
+  </div>
+</section>
+
+<section id="education">
+  <div class="section-label" data-fr="// 05. parcours" data-en="// 05. background">// 05. parcours</div>
+  <h2 class="section-title" data-fr="Formation & Certifications" data-en="Education & Certifications">Formation & Certifications</h2>
+  <div class="edu-grid">
+    <div>
+      <div class="edu-col-title" data-fr="Formation" data-en="Education">Formation</div>
+      <div class="timeline fade-up">
+        <div class="timeline-item">
+          <div class="tl-date">2023 – présent</div>
+          <div class="tl-title" data-fr="Licence – Sécurité Informatique" data-en="Bachelor's – Computer Security">Licence – Sécurité Informatique</div>
+          <div class="tl-sub" data-fr="IFRI – Université d'Abomey-Calavi, Bénin" data-en="IFRI – University of Abomey-Calavi, Benin">IFRI – Université d'Abomey-Calavi, Bénin</div>
+        </div>
+        <!-- ✏️ AJOUTER une formation : copier un timeline-item ici -->
+      </div>
+    </div>
+    <div>
+      <div class="edu-col-title" data-fr="Certifications" data-en="Certifications">Certifications</div>
+      <div class="timeline fade-up">
+        <div class="timeline-item">
+          <div class="tl-date">2025</div>
+          <div class="tl-title">Introduction to Cyber Security</div>
+          <div class="tl-sub">Cisco Networking Academy</div>
+        </div>
+        <div class="timeline-item" style="opacity:.4">
+          <div class="tl-date" data-fr="Prochainement" data-en="Coming soon">Prochainement</div>
+          <div class="tl-title" data-fr="En cours" data-en="In progress">En cours</div>
+          <div class="tl-sub">CompTIA Security+ · ISO 27001 Lead Implementer</div>
+        </div>
+        <!-- ✏️ AJOUTER une certification : copier un timeline-item ici -->
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="contact">
+  <div class="section-label" data-fr="// 06. contact" data-en="// 06. contact">// 06. contact</div>
+  <h2 class="section-title" data-fr="Travaillons ensemble" data-en="Let's work together">Travaillons ensemble</h2>
+  <p class="contact-tagline" data-fr="Besoin d'un audit de sécurité, d'une PSSI ou d'une analyse de conformité ISO 27001 ? Disponible pour des missions freelance et des collaborations à distance." data-en="Need a security audit, an ISSP or an ISO 27001 compliance analysis? Available for freelance missions and remote collaborations.">Besoin d'un audit de sécurité, d'une PSSI ou d'une analyse de conformité ISO 27001 ? Disponible pour des missions freelance et des collaborations à distance.</p>
+  <div class="contact-links">
+    <a href="mailto:vhoundete@gmail.com" class="contact-link">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+      vhoundete@gmail.com
+    </a>
+    <a href="https://linkedin.com/in/venancehoundete" target="_blank" class="contact-link">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+      LinkedIn
+    </a>
+    <a href="tel:+22901699559407" class="contact-link">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13.9 19.79 19.79 0 0 1 1.62 5.23 2 2 0 0 1 3.6 3h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 10.9a16 16 0 0 0 6 6l.92-.92a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+      +229 01 69 95 94 07
+    </a>
+  </div>
+</section>
+
+<footer>
+  <span>© 2026 Venance Houndété</span>
+  <span style="color:var(--green)">Cybersécurité · GRC · Bénin</span>
+  <span>vhoundete@gmail.com</span>
+</footer>
+
+<script>
+// CURSOR
+const cursor=document.getElementById('cursor'),ring=document.getElementById('cursor-ring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cursor.style.left=mx+'px';cursor.style.top=my+'px'});
+(function loop(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(loop)})();
+document.querySelectorAll('a,button,.project-card,.service-card,.tool-chip').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{cursor.style.width='18px';cursor.style.height='18px';ring.style.width='54px';ring.style.height='54px'});
+  el.addEventListener('mouseleave',()=>{cursor.style.width='10px';cursor.style.height='10px';ring.style.width='36px';ring.style.height='36px'});
+});
+
+// LANG
+let lang='fr';
+const phrases={
+  fr:['Gouvernance & Conformité SI','Aspirant RSSI','Audit de Sécurité','ISO 27001 · PSSIE · NIST'],
+  en:['IS Governance & Compliance','Aspiring CISO','Security Auditor','ISO 27001 · PSSIE · NIST']
+};
+function setLang(l){
+  lang=l;
+  document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active',b.textContent.includes(l.toUpperCase())));
+  document.documentElement.lang=l;
+  document.querySelectorAll('[data-'+l+']').forEach(el=>{
+    const v=el.getAttribute('data-'+l);
+    if(el.tagName==='INPUT'||el.tagName==='TEXTAREA')el.placeholder=v;
+    else el.innerHTML=v;
+  });
+  // reset typing
+  phArr=phrases[l]; pi=0; ci=0; del=false;
+}
+
+// TYPING
+let phArr=phrases.fr,pi=0,ci=0,del=false;
+const tEl=document.getElementById('typing-target');
+function type(){
+  const p=phArr[pi];
+  if(!del){tEl.textContent=p.slice(0,++ci);if(ci===p.length){del=true;setTimeout(type,2000);return}}
+  else{tEl.textContent=p.slice(0,--ci);if(ci===0){del=false;pi=(pi+1)%phArr.length}}
+  setTimeout(type,del?40:80);
+}
+type();
+
+// SCROLL
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach((e,i)=>{
+    if(e.isIntersecting){
+      setTimeout(()=>e.target.classList.add('visible'),i*80);
+      e.target.querySelectorAll('.skill-bar-fill').forEach(b=>b.style.width=b.dataset.width+'%');
+    }
+  });
+},{threshold:0.1});
+document.querySelectorAll('.fade-up').forEach(el=>obs.observe(el));
+</script>
+</body>
+</html>
